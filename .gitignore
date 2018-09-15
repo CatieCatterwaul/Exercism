@@ -1,0 +1,7 @@
+.solution.json
+*.md
+*Tests.swift
+LinuxMain.swift
+.build
+*.xcodeproj
+swift/*/.gitignore
