@@ -2,61 +2,64 @@ import XCTest
 @testable import RobotSimulator
 
 final class RobotTestCase: XCTestCase {
+  typealias Coordinates = SimulatedRobot.Coordinates
+  
   func test_Equality() {
-    let robotSimulator1 = RobotSimulator(
-      coordinates: (3, 8),
-      orientation: .west
+    let simulatedRobot1 = SimulatedRobot(
+      coordinates: Coordinates(x: 3, y: 8),
+      bearing: .west
     )
-    let robotSimulator2 = RobotSimulator(
-      coordinates: (15, -300),
-      orientation: .north
+    let simulatedRobot2 = SimulatedRobot(
+      coordinates: Coordinates(x: 15, y: -300),
+      bearing: .north
     )
-    XCTAssertEqual(robotSimulator1, robotSimulator1)
-    XCTAssertNotEqual(robotSimulator1, robotSimulator2)
+    XCTAssertEqual(simulatedRobot1, simulatedRobot1)
+    XCTAssertNotEqual(simulatedRobot1, simulatedRobot2)
   }
-  
+
   func test_emptyInstructions() {
-    var robotSimulator1 = RobotSimulator(
-      coordinates: (15, -300),
-      orientation: .north
+    var simulatedRobot1 = SimulatedRobot(
+      coordinates: Coordinates(x: 15, y: -300),
+      bearing: .north
     )
-    let robotSimulator2 = robotSimulator1
-    robotSimulator1.process(instructions: "")
-    XCTAssertEqual(robotSimulator1, robotSimulator2)
+    let simulatedRobot2 = simulatedRobot1
+    simulatedRobot1.evaluate("")
+    XCTAssertEqual(simulatedRobot1, simulatedRobot2)
   }
-  
+
   func test_advance() {
-    var robotSimulator = RobotSimulator(
-      coordinates: (0, 0),
-      orientation: .south
+    var simulatedRobot = SimulatedRobot(
+      coordinates: Coordinates(x: 0, y: 0),
+      bearing: .south
     )
-    robotSimulator.process(instructions: "A")
-    XCTAssertTrue(
-      robotSimulator.coordinates == (0, -1),
-      "\(robotSimulator.coordinates)"
-    )
-  }
-  
-  func test_turn() {
-    var robotSimulator = RobotSimulator(
-      coordinates: (0, 0),
-      orientation: .west
-    )
-    robotSimulator.process(instructions: "R")
-    XCTAssertEqual(robotSimulator.orientation, .north)
-  }
-  
-  func test_RAALAL() {
-    var robotSimulator = RobotSimulator(
-      coordinates: (7, 3),
-      orientation: .north
-    )
-    robotSimulator.process(instructions: "RAALAL")
+    simulatedRobot.evaluate("A")
+    
     XCTAssertEqual(
-      robotSimulator,
-      RobotSimulator(
-        coordinates: (9, 4),
-        orientation: .west
+      simulatedRobot.coordinates,
+      Coordinates(x: 0, y: -1)
+    )
+  }
+
+  func test_turn() {
+    var simulatedRobot = SimulatedRobot(
+      coordinates: Coordinates(x: 0, y: 0),
+      bearing: .west
+    )
+    simulatedRobot.evaluate("R")
+    XCTAssertEqual(simulatedRobot.bearing, .north)
+  }
+
+  func test_RAALAL() {
+    var simulatedRobot = SimulatedRobot(
+      coordinates: Coordinates(x: 7, y: 3),
+      bearing: .north
+    )
+    simulatedRobot.evaluate("RAALAL")
+    XCTAssertEqual(
+      simulatedRobot,
+      SimulatedRobot(
+        coordinates: Coordinates(x: 9, y: 4),
+        bearing: .west
       )
     )
   }

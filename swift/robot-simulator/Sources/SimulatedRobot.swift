@@ -1,4 +1,9 @@
-struct SimulatedRobot {
+struct SimulatedRobot: Equatable {
+  struct Coordinates: Equatable {
+    var x: Int
+    var y: Int
+  }
+
   enum Bearing: CaseIterable {
     case north
     case east
@@ -12,28 +17,11 @@ struct SimulatedRobot {
     case turnRight = "R"
   }
   
-  var coordinates: [Int]!
-  var bearing: Bearing!
-  
-  mutating func at(x: Int, y: Int) {
-    coordinates = [x, y]
-  }
-  
-  mutating func orient(_ bearing: Bearing) {
-    self.bearing = bearing
-  }
-  
-  mutating func place(x: Int, y: Int, direction: Bearing) {
-    at(x: x, y: y)
-    orient(direction)
-  }
-  
-  func instructions(_ instructions: String) -> [Instruction] {
-    return instructions.compactMap(Instruction.init)
-  }
+  var coordinates: Coordinates
+  var bearing: Bearing
   
   mutating func evaluate(_ instructions: String) {
-    for instruction in self.instructions(instructions) {
+    for instruction in [Instruction](instructions) {
       switch instruction {
       case .advance:
         advance()
@@ -46,15 +34,15 @@ struct SimulatedRobot {
   }
   
   mutating func advance() {
-    switch bearing! {
+    switch bearing {
     case .north:
-      coordinates[1] += 1
+      coordinates.y += 1
     case .east:
-      coordinates[0] += 1
+      coordinates.x += 1
     case .south:
-      coordinates[1] -= 1
+      coordinates.y -= 1
     case .west:
-      coordinates[0] -= 1
+      coordinates.x -= 1
     }
   }
   
@@ -76,5 +64,44 @@ struct SimulatedRobot {
       ? bearings.count + signedIndex
       : signedIndex
     bearing = bearings[index]
+  }
+}
+
+//MARK:- Array
+extension Array where Element == SimulatedRobot.Instruction {
+  init(_ instructions: String) {
+    self = instructions.compactMap(SimulatedRobot.Instruction.init)
+  }
+}
+
+//MARK:- Weird API for tests 🤷🏽‍♀️
+extension SimulatedRobot {
+  init() {
+    coordinates = Coordinates(x: 0, y: 0)
+    bearing = Bearing.allCases[0]
+  }
+  
+  mutating func at(x: Int, y: Int) {
+    coordinates = Coordinates(x: x, y: y)
+  }
+  
+  mutating func orient(_ bearing: Bearing) {
+    self.bearing = bearing
+  }
+  
+  mutating func place(x: Int, y: Int, direction: Bearing) {
+    at(x: x, y: y)
+    orient(direction)
+  }
+  
+  func instructions(_ instructions: String) -> [Instruction] {
+    return Array(instructions)
+  }
+}
+
+extension SimulatedRobot.Coordinates: ExpressibleByArrayLiteral {
+  init(arrayLiteral elements: Int...) {
+    x = elements.first!
+    y = elements.last!
   }
 }
