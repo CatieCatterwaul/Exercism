@@ -37,6 +37,15 @@ final class RobotTestCase: XCTestCase {
     )
   }
   
+  func test_turn() {
+    var robotSimulator = RobotSimulator(
+      coordinates: (0, 0),
+      orientation: .west
+    )
+    robotSimulator.process(instructions: "R")
+    XCTAssertEqual(robotSimulator.orientation, .north)
+  }
+  
   func test_RAALAL() {
     var robotSimulator = RobotSimulator(
       coordinates: (7, 3),

@@ -26,14 +26,14 @@ struct RobotSimulator {
     for instruction in instructions.compactMap(Instruction.init) {
       func turn(rotation: Int) {
         let orientations = Orientation.allCases
-        let index =
+        let signedIndex =
           (orientations.firstIndex(of: orientation)! + rotation)
           % orientations.count
-        orientation = orientations[
-          index < 0
-          ? orientations.count + index
-          : index
-        ]
+        let index =
+          signedIndex < 0
+          ? orientations.count + signedIndex
+          : signedIndex
+        orientation = orientations[index]
       }
       
       switch instruction {
