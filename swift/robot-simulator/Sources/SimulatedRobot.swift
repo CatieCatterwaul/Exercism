@@ -12,42 +12,69 @@ struct SimulatedRobot {
     case turnRight = "R"
   }
   
-  let coordinates = [3, 0]
-  let bearing: Bearing = .east
+  var coordinates: [Int]!
+  var bearing: Bearing!
   
-//  init() {
-//    self.bearing = .east
-//  }
-  
-  func at(x: Int, y: Int) {
-    
+  mutating func at(x: Int, y: Int) {
+    coordinates = [x, y]
   }
   
-  func place(x: Int, y: Int, direction: Bearing) {
-    
+  mutating func orient(_ bearing: Bearing) {
+    self.bearing = bearing
   }
   
-  func instructions(_: String) -> [Instruction] {
-    return [.turnLeft]
+  mutating func place(x: Int, y: Int, direction: Bearing) {
+    at(x: x, y: y)
+    orient(direction)
   }
   
-  func evaluate(_: String) {
-    
+  func instructions(_ instructions: String) -> [Instruction] {
+    return instructions.compactMap(Instruction.init)
   }
   
-  func orient(_: Bearing) {
-    
+  mutating func evaluate(_ instructions: String) {
+    for instruction in self.instructions(instructions) {
+      switch instruction {
+      case .advance:
+        advance()
+      case .turnLeft:
+        turnLeft()
+      case .turnRight:
+        turnRight()
+      }
+    }
   }
   
-  func advance() {
-    
+  mutating func advance() {
+    switch bearing! {
+    case .north:
+      coordinates[1] += 1
+    case .east:
+      coordinates[0] += 1
+    case .south:
+      coordinates[1] -= 1
+    case .west:
+      coordinates[0] -= 1
+    }
   }
   
-  func turnRight() {
-    
+  mutating func turnRight() {
+    turn(rotation: 1)
   }
   
-  func turnLeft() {
-    
+  mutating func turnLeft() {
+    turn(rotation: -1)
+  }
+  
+  private mutating func turn(rotation: Int) {
+    let bearings = Bearing.allCases
+    let signedIndex =
+      (bearings.firstIndex(of: bearing)! + rotation)
+      % bearings.count
+    let index =
+      signedIndex < 0
+      ? bearings.count + signedIndex
+      : signedIndex
+    bearing = bearings[index]
   }
 }
