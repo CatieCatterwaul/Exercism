@@ -1,12 +1,6 @@
 struct RobotSimulator {
   typealias Coordinates = (Int, Int)
-  
-  enum Orientation: CaseIterable {
-    case north
-    case east
-    case south
-    case west
-  }
+  typealias Orientation = SimulatedRobot.Bearing
   
   var coordinates: Coordinates
   var orientation: Orientation
@@ -16,14 +10,8 @@ struct RobotSimulator {
     self.orientation = orientation
   }
   
-  mutating func process(instructions: String) {
-    enum Instruction: Character {
-      case advance = "A"
-      case turnLeft = "L"
-      case turnRight = "R"
-    }
-    
-    for instruction in instructions.compactMap(Instruction.init) {
+  mutating func process(instructions: String) {    
+    for instruction in instructions.compactMap(SimulatedRobot.Instruction.init) {
       func turn(rotation: Int) {
         let orientations = Orientation.allCases
         let signedIndex =
